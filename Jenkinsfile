@@ -2,8 +2,9 @@
 
 def buildUnix(label, stashName) {
 	node(label) {
+		checkout scm
 		sh '''#!/bin/bash -le
-			gcc hello.c -o $hello_{label}
+			gcc hello.c -o hello_${label}
 		'''
 	}
 }
@@ -16,17 +17,17 @@ timestamps {
 					checkout scm
 					String vsvars_bat = 'C:\\Program Files (x86)\\Microsoft Visual Studio 12.0\\VC\\vcvarsall.bat'
 					bat """
-						call "%ProgramFiles(X86)%\\%{vsvars_bat}" x86
+						call "%ProgramFiles(X86)%\\${vsvars_bat}" x86
 						cl.exe hello.c
 					"""
 					stash name: "build_win", includes: "*.exe"
 				}
-			}
+			},
 			"build_mac": {
 				buildUnix("mac")
-			}
-			"build_linix": {
-				buildUnix("linix")
+			},
+			"build_linux": {
+				buildUnix("linux")
 			}
 		)
 	}
