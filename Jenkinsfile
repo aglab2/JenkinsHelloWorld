@@ -7,6 +7,7 @@ def buildUnix(label, stashName) {
 			gcc hello.c -o hello_${label}.out
 		"""
 		stash name: stashName, includes: "*.out"
+		deleteDir()
 	}
 }
 
@@ -22,6 +23,7 @@ timestamps {
 						cl.exe hello.c
 					"""
 					stash name: "build_win", includes: "*.exe"
+					deleteDir()
 				}
 			},
 			"build_mac": {
@@ -39,6 +41,7 @@ timestamps {
 			unstash "build_unix"
 			unstash "build_win"
 			archiveArtifacts artifacts: '*'
+			deleteDir()
 		}
 	}
 }
