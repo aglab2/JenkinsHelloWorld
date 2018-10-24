@@ -3,7 +3,7 @@
 def buildUnix(label, stashName) {
 	node(label) {
 		checkout scm
-		bash '''#!/bin/bash
+		sh '''#!/bin/sh
 			clang hello.c -o hello_${label}.out
 		'''
 		stash name: stashName, includes: "*.out"
