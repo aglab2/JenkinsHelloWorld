@@ -1,5 +1,13 @@
 #!/usr/bin/env groovy
 
+def buildUnix(label, stashName) {
+	node(label) {
+		sh '''#!/bin/bash -le
+			gcc hello.c -o $hello_{label}
+		'''
+	}
+}
+
 timestamps {
 	stage('build') {
 		parallel(
@@ -13,6 +21,12 @@ timestamps {
 					"""
 					stash name: "build_win", includes: "*.exe"
 				}
+			}
+			"build_mac": {
+				buildUnix("mac")
+			}
+			"build_linix": {
+				buildUnix("linix")
 			}
 		)
 	}
