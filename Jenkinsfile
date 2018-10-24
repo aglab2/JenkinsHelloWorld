@@ -34,5 +34,11 @@ timestamps {
 	}
 	
 	stage('store') {
+		node("master") {
+			unstash "build_mac"
+			unstash "build_unix"
+			unstash "build_win"
+			archiveArtifacts artifacts: '*'
+		}
 	}
 }
