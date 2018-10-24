@@ -3,9 +3,10 @@
 def buildUnix(label, stashName) {
 	node(label) {
 		checkout scm
-		sh '''#!/bin/bash -le
-			gcc hello.c -o hello_${label}
+		bash '''#!/bin/bash
+			clang hello.c -o hello_${label}.out
 		'''
+		stash name: stashName, includes: "*.out"
 	}
 }
 
@@ -24,10 +25,10 @@ timestamps {
 				}
 			},
 			"build_mac": {
-				buildUnix("mac")
+				buildUnix("mac", "build_mac")
 			},
 			"build_linux": {
-				buildUnix("linux")
+				buildUnix("linux", "build_unix")
 			}
 		)
 	}
