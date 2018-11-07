@@ -1,5 +1,26 @@
 #!/usr/bin/env groovy
 
+Boolean _buildMac = true
+try {
+	_buildMac = buildMac.toBoolean()
+} catch (MissingPropertyException ignore) {
+	_buildMac = true
+}
+
+Boolean _buildWin = true
+try {
+	_buildWin = buildWin.toBoolean()
+} catch (MissingPropertyException ignore) {
+	_buildWin = true
+}
+
+Boolean _buildUnix = true
+try {
+	_buildUnix = buildUnix.toBoolean()
+} catch (MissingPropertyException ignore) {
+	_buildUnix = true
+}
+
 def buildUnix(label, stashName) {
 	node(label) {
 		checkout scm
@@ -15,31 +36,42 @@ timestamps {
 	stage('build') {
 		parallel(
 			"build_win": {
-				node("windows") {
-					checkout scm
-					String vsvars_bat = 'Microsoft Visual Studio 12.0\\VC\\vcvarsall.bat'
-					bat """
-						call "%ProgramFiles(X86)%\\${vsvars_bat}" x86
-						cl.exe hello.c
-					"""
-					stash name: "build_win", includes: "*.exe"
-					deleteDir()
+				if (_buildWin)
+				{
+					node("windows") {
+						checkout scm
+						String vsvars_bat = 'Microsoft Visual Studio 12.0\\VC\\vcvarsall.bat'
+						bat """
+							call "%ProgramFiles(X86)%\\${vsvars_bat}" x86
+							cl.exe hello.c
+						"""
+						stash name: "build_win", includes: "*.exe"
+						deleteDir()
+					}
 				}
 			},
 			"build_mac": {
-				buildUnix("mac", "build_mac")
+				if (_buildMac)
+					buildUnix("mac", "build_mac")
 			},
 			"build_linux": {
-				buildUnix("linux", "build_unix")
+				if (_buildUnix)
+					buildUnix("linux", "build_unix")
 			}
 		)
 	}
 	
 	stage('store') {
 		node("master") {
-			unstash "build_mac"
-			unstash "build_unix"
-			unstash "build_win"
+			if (_buildMac)
+				unstash "build_mac"
+				
+			if (_buildUnix)
+				unstash "build_unix"
+			
+			if (_buildWin)
+				unstash "build_win"
+
 			archiveArtifacts artifacts: '*'
 			deleteDir()
 		}
