@@ -2,6 +2,7 @@
 
 @Library('KopyrinLib')
 import org.barabuga.build
+build b = new build()
 
 Boolean _buildMac = true
 try {
@@ -29,15 +30,15 @@ timestamps {
 		parallel(
 			"build_win": {
 				if (_buildWin)
-					build.buildWin("windows", "build_win")
+					b.buildWin("windows", "build_win")
 			},
 			"build_mac": {
 				if (_buildMac)
-					build.buildUnix("mac", "build_mac")
+					b.buildUnix("mac", "build_mac")
 			},
 			"build_linux": {
 				if (_buildUnix)
-					build.buildUnix("linux", "build_unix")
+					b.buildUnix("linux", "build_unix")
 			}
 		)
 	}
