@@ -2,7 +2,7 @@
 
 @Library('KopyrinLib')
 import org.barabuga.build
-build b = new build()
+Build b = new Build()
 
 Boolean _buildMac = true
 try {
