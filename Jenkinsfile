@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-@library('KopyrinLib')
+@Library('KopyrinLib')
 import org.barabuga.build
 
 Boolean _buildMac = true
