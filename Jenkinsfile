@@ -1,5 +1,8 @@
 #!/usr/bin/env groovy
 
+@library('KopyrinLib')
+import org.barabuga.build
+
 Boolean _buildMac = true
 try {
 	_buildMac = buildMac.toBoolean()
@@ -21,44 +24,20 @@ try {
 	_buildUnix = true
 }
 
-def buildUnix(label, stashName) {
-	node(label) {
-		checkout scm
-		sh """#!/bin/sh
-			gcc hello.c -o hello_${label}.out
-		"""
-		stash name: stashName, includes: "*.out"
-		deleteDir()
-	}
-}
-
-def buildWin(label, stashName) {
-	node(label) {
-		checkout scm
-		String vsvars_bat = 'Microsoft Visual Studio 12.0\\VC\\vcvarsall.bat'
-		bat """
-			call "%ProgramFiles(X86)%\\${vsvars_bat}" x86
-			cl.exe hello.c
-		"""
-		stash name: stashName, includes: "*.exe"
-		deleteDir()
-	}
-}
-
 timestamps {
 	stage('build') {
 		parallel(
 			"build_win": {
 				if (_buildWin)
-					buildWin("windows", "build_win")
+					build.buildWin("windows", "build_win")
 			},
 			"build_mac": {
 				if (_buildMac)
-					buildUnix("mac", "build_mac")
+					build.buildUnix("mac", "build_mac")
 			},
 			"build_linux": {
 				if (_buildUnix)
-					buildUnix("linux", "build_unix")
+					build.buildUnix("linux", "build_unix")
 			}
 		)
 	}
