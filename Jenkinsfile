@@ -1,8 +1,7 @@
 #!/usr/bin/env groovy
 
 @Library('KopyrinLib')
-import org.barabuga.build
-var b = new org.barabuga.build.Build()
+var b = new org.barabuga.Build()
 
 Boolean _buildMac = true
 try {
